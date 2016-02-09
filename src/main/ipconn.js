@@ -13,7 +13,7 @@ const R = require('ramda'),
 
   unknownConn = {connection: 'unknown'},
 
-  extractTuples = R.compose(R.map(R.split('$')), R.split('|')),
+  extractTuples = R.compose(R.map(R.split(',')), R.split('|')),
 
   getConfig = R.map((item) => {
     return {cidr: ipUtils.parseCIDR(item[0]), conn: {connection: item[1]}};

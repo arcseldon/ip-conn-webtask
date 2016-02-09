@@ -6,11 +6,11 @@ const chai = require('chai'),
   expect = chai.expect,
   ipUtils = require('ipaddr.js'),
   testFixtures = require('../fixtures/testFixtures'),
-  ipv4TestData = testFixtures.ipv4TestData,
-  ipv6TestData = testFixtures.ipv6TestData,
+  ipv4TestData = testFixtures.ipv4,
+  ipv6TestData = testFixtures.ipv6,
   webtask = require('../../main/ipconn');
 
-describe('ipAuthStandalone', () => {
+describe('ipconn', () => {
 
   describe('ipaddr.js third party module - usage patterns for validate, parse, and match', () => {
 
@@ -49,9 +49,9 @@ describe('ipAuthStandalone', () => {
 
     beforeEach(function () {
       ctx = {data: {ip: ''}};
-      ctx.data.CONFIG = '200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40$fabrikam-adfs-6|' +
-        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40$contoso-ping-6|' +
-        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64$ms-azuread-6';
+      ctx.data.CONFIG = '200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40,fabrikam-adfs-6|' +
+        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40,contoso-ping-6|' +
+        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64,ms-azuread-6';
     });
 
     it('should reject missing ip', () => {
@@ -87,9 +87,9 @@ describe('ipAuthStandalone', () => {
 
     beforeEach(function () {
       ctx = {data: {ip: ''}};
-      ctx.data.CONFIG = '200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40$fabrikam-adfs-6|' +
-        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40$contoso-ping-6|' +
-        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64$ms-azuread-6';
+      ctx.data.CONFIG = '200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40,fabrikam-adfs-6|' +
+        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40,contoso-ping-6|' +
+        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64,ms-azuread-6';
     });
 
     const callbackWith = () => {
@@ -127,7 +127,7 @@ describe('ipAuthStandalone', () => {
 
     beforeEach(function () {
       ctx = {data: {ip: ''}};
-      ctx.data.CONFIG = '83.29.4.2/16$fabrikam-adfs|99.2.4.28/32$contoso-ping|44.2.4.3/16$ms-azuread';
+      ctx.data.CONFIG = '83.29.4.2/16,fabrikam-adfs|99.2.4.28/32,contoso-ping|44.2.4.3/16,ms-azuread';
     });
 
     const successCallbackWith = (name) => {
@@ -170,9 +170,9 @@ describe('ipAuthStandalone', () => {
 
     beforeEach(function () {
       ctx = {data: {ip: ''}};
-      ctx.data.CONFIG = '200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40$fabrikam-adfs-6|' +
-        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40$contoso-ping-6|' +
-        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64$ms-azuread-6';
+      ctx.data.CONFIG = '200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40,fabrikam-adfs-6|' +
+        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40,contoso-ping-6|' +
+        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64,ms-azuread-6';
     });
 
     const successCallbackWith = (name) => {
@@ -213,10 +213,10 @@ describe('ipAuthStandalone', () => {
 
     beforeEach(function () {
       ctx = {data: {ip: ''}};
-      ctx.data.CONFIG = '83.29.4.2/16$fabrikam-adfs|' +
-        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40$contoso-ping-6|' +
-        '99.2.4.28/32$contoso-ping|' +
-        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64$ms-azuread-6';
+      ctx.data.CONFIG = '83.29.4.2/16,fabrikam-adfs|' +
+        '60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40,contoso-ping-6|' +
+        '99.2.4.28/32,contoso-ping|' +
+        'eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64,ms-azuread-6';
     });
 
     const successCallbackWith = (name) => {

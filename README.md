@@ -1,6 +1,6 @@
 # ip-conn-webtask
 
-Powered by [wt-cli](https://www.npmjs.com/package/wt-cli) from [auth0](https://webtask.io).
+A [webtask](https://webtask.io/), powered by [wt-cli](https://www.npmjs.com/package/wt-cli) from [auth0](https://webtask.io).
 
 ### Purpose
 
@@ -24,9 +24,11 @@ No match found:
 
 ```
 {
-  connection: <connection name>
+  connection: <unknown>
 }
 ```
+
+![run cmd](run.gif)
 
 ### Installation
 
@@ -71,24 +73,24 @@ Ok, all ready for setup to get your webtask deployed..
 
 Suppose you have information similar to below:
 
- - Fabrikam => 83.29.4.2/16 => Connection: fabrikam-adfs
- - Contoso => 99.2.4.28/32 => Connection: contoso-ping
- - Microsoft => 44.2.4.3/16 => Connection: ms-azuread
+ Fabrikam => 83.29.4.2/16 => Connection: fabrikam-adfs<br/>
+ Contoso => 99.2.4.28/32 => Connection: contoso-ping<br/>
+ Microsoft => 44.2.4.3/16 => Connection: ms-azuread<br/>
 
-You need to put each CIDR and Connection pair into a single comma separated file, one pair per line.
+ Ultimately, the format you need to put this information into is:
 
-For example (adding a few more entries, and illustrating ipv4 and ipv6 support):
+ ```
+cidr,connection_name|cidr,connection_name|cidr,connection_name|...
+```
 
-83.29.4.2/16, fabrikam-adfs
-99.2.4.28/32, contoso-ping
-44.2.4.3/16, ms-azuread
-200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40, fabrikam-adfs-6
-60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40, contoso-ping-6
-eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64, ms-azuread-6
+- We use a comma `,` to separate cidr and connection_name tuples (pairs)<br/>
+- We use a pipe `|` character to separate cidr/connection_name pairing
 
-Note, above no quoting is used around the values.
 
-Once you have this format, you are ready to deploy your webtask
+This can be done manually, or you can use our automatic command builder and deployment tool.
+
+Please see next section on deployment.
+
 
 ### Deploy
 
@@ -100,52 +102,60 @@ The format you need:
 wt create ../build/main/ipconn.js --name ipconn --secret 'CONFIG=XXX' --json --prod
 ```
 
-As you can see above, our code for the webtask is `ipconn.js`.
-`XXX` above represents the mapping data that needs to be passed as part of the secret for deployment with the webtask
+As you can see above, our code for the webtask is `ipconn.js`.<br/>
+`XXX` above represents the mapping data (that we discussed in Setup above) that needs to be passed as part of the secret for deployment with the webtask
 
-Here is the same instruction, this time with the secret fully populated (using the csv information above):
-
-```
-wt create ../build/main/ipconn.js --name ipconn --secret 'CONFIG=83.29.4.2/16$fabrikam-adfs|99.2.4.28/32$contoso-ping|44.2.4.3/16$ms-azuread|200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40$fabrikam-adfs-6|60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40$contoso-ping-6|eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64$ms-azuread-6' --json --prod
-```
-
-The format for the `secret` is:
+Here is the same instruction, this time with a a smaple secret fully populated:
 
 ```
-CONFIG=cidr$connection_name|cidr$connection_name|cidr$connection_name|...
+wt create ../build/main/ipconn.js --name ipconn --secret 'CONFIG=83.29.4.2/16,fabrikam-adfs|99.2.4.28/32,contoso-ping|44.2.4.3/16,ms-azuread|200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40,fabrikam-adfs-6|60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40,contoso-ping-6|eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64,ms-azuread-6' --json --prod
 ```
-
-We use a pipe `|` character to separate cidr/connection_name pairs, and we use a dollar `$` to separate cidr and connection_name
-
 
 The good news is that you can use our tool to fully automate creation of the required deployment command, and optionally
 fully deploy the webtask on your behalf.
 
-On the command line (using your favourite terminal), change directories to `build/tools`
+On the command line (using your favourite terminal), create a file called `config.csv` under `build/tools` directory.
 
-Put your csv data inside a file called `mapping.csv`, and then do either:
+You need to put each CIDR and Connection pair into a single comma separated file, one pair per line.<br/>
+For example (adding a few more entries, and illustrating ipv4 and ipv6 support):
 
-```
-node wt-helper.js --name ipconn
-```
+83.29.4.2/16, fabrikam-adfs<br/>
+99.2.4.28/32, contoso-ping<br/>
+44.2.4.3/16, ms-azuread<br/>
+200b:af16:a83f:c7be:dd00:d9fb:ddc3:92aa/40, fabrikam-adfs-6<br/>
+60b9:0fd3:7e62:e6fe:72e2:1407:5cfa:52f6/40, contoso-ping-6<br/>
+eaf5:59b7:ee1f:e78a:d5bd:a5e6:251b:7d29/64, ms-azuread-6<br/>
 
-This will print out the required command line to deploy the webtask.
-Copy this, and then run it directly off the command line.
+Note, above no quoting is used around the values.
 
-You will see a URL given back by wt-cli. Copy this URL.
-
-or, adding the `--deploy` option:
-
-```
-node wt-helper.js --name ipconn --deploy
-```
-
-will fully automate the deployment.
-
-For the latter command, just run the `deploy.sh` shell script provided.
+Next, from the base of the project run:
 
 ```
-$ ./deploy.sh
+npm run loader -- --name ipconn
+```
+
+This will output the required command to deploy the webtask. Copy this command, and run it off the command line.
+The result will be URL, something like:
+
+```
+URL: "https://webtask.it.auth0.com/api/run/wt-arcseldon-gmail_com-0/ipconn"
+```
+
+Copy this URL, as we use this to actually call our service.
+
+
+Alternatively, you can additionally add the `--deploy` option when using the command deploy tool:
+
+```
+npm run loader -- --name ipconn --deploy
+```
+
+This will fully automate the deployment, you will receive the URL directly in one step.
+
+You can optionally just run `loader.sh` provided in the base directory for a one step deployment.
+
+```
+$ ./loader.sh
 ```
 
 You will see an output with URL prefix followed by a URL.
@@ -155,6 +165,31 @@ URL: "https://webtask.it.auth0.com/api/run/wt-arcseldon-gmail_com-0/ipconn"
 ```
 
 Copy this URL.
+
+To get help, just run:
+
+```
+npm run help:loader
+```
+
+You will get information such as:
+
+```
+ Usage: loader [options]
+
+  Options:
+
+    -h, --help                 output usage information
+    -V, --version              output the version number
+    -t, --taskname [taskname]  The task name to register for webtask
+    -d --deploy                Do deployment
+
+  Generates necessary wt-cli command line task for input mapping file
+  Input file should be named mapping.csv, located at: /<your_project_path>/ip-conn-webtask/build/tools/config.csv.
+  Format, once per line:  cidr, connection_name
+  Example line:  83.29.4.2/16, fabrikam-adfs
+  For an example input file, see: /<your_project_path>/ip-conn-webtask/build/tools/sample.csv
+```
 
 
 # Run
@@ -182,10 +217,37 @@ For an unknown IP address you will see:
 
 True errors will be reported as such.
 
-Please contact your Auth0 represetative if you require any further assistance.
+Please contact your Auth0 representative if you require any further assistance.
 
-Also, please see our **ip-conn-webtask-scaled-firebase** webtask for a truly scaled version, with out of the box
+Also, please see our **ip-conn-webtask-firebase** webtask for a truly scaled version, with out of the box
 configuration support via Firebase, and the ability to support 1000s of CIDRs with excellent performance characteristics
+
+### Demo / Functional Testing
+
+Copy the `env` file in base of the project, to `.env` in base of project.
+Populate the values correctly, eg.
+
+AUTH0_DOMAIN_URL=https://your_profile_name.auth0.com/user/ip<br/>
+AUTH0_CONNECTION=twitter<br/>
+
+Then run:
+
+```
+$ ./demo.sh
+```
+
+This should:
+
+Retrieve your IP as known to Auth0 (this also works running over VPN etc)<br/>
+Inject that IP into a sample config.csv<br/>
+Create and deploy the webtask acording to sample config.csv<br/>
+Create and execute a `curl` command to the webtask URL endpoint using your IP<br/>
+
+
+Result should be the registered `connection name` you provided in `.env`
+
+If you ensure that the `connection name` matches an actual Connection you are using,
+then you can then automaticaly login using that Connection via your custom login page.
 
 
 ### Note on O/S support:
@@ -200,16 +262,17 @@ There are several supporting package.json script commands to support working wit
 
 The code is written using ES6 constructs, but nothing that is not supported by Node 5.5 out of the box.
 In other words, although we use Babel to compile the ES6 Javascript from src/ to build/ directories, it
-is quite possible to code and run the code directly from the src/ directory using Node 5.5 with babel polyfill support.
-For this reason, opted not to use destructuring, default params, or ES6 modules for this project. Also,
-I found no need for sourcemaps, for the reason given above, I can just comfortably work directly from src.
+is quite possible to code and run the code directly from the src/ directory using Node 5.5 without any
+babel / polyfill support. For this reason, opted not to use destructuring, default params, or ES6 modules
+for this project. Also, I found no need for sourcemaps, for the reason given above, I can just comfortably
+work directly from src.
 
 That said, you can switch on compile watch and test watch, lint watch by running:
 
 ```
-watch: compile
-watch: test
-watch: lint
+npm run watch:compile
+npm run watch:test
+npm run watch:lint
 ```
 
 Also, I use Webstorm 11 IDE, and have quite a few conveniences set up to automate alot of tasks, but there are no dependencies etc on any given Editor / IDE.
@@ -223,6 +286,7 @@ npm run cov:test
 to get some coverage metrics. Will be written to `coverage` directory - see *coverage/Icov-report/index.html* for details.
 
 For specfic development questions or discovered bugs, please contact *Richard Seldon* at *arcseldon@icloud.com*
-and feel free to raise an issue on the Auth0 github repository for this project. All our code is freely available as
-open source.
+and feel free to raise an issue on the Auth0 github repository for this project. All our code is freely available
+as open source.
+
 

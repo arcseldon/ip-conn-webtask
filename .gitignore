@@ -1,4 +1,6 @@
+.env
 npm-debug.log
 node_modules
 build
+.tmp
 

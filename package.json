@@ -1,5 +1,5 @@
 {
-  "name": "ip-address-auth-standalone",
+  "name": "ip-conn-webtask",
   "version": "0.0.1",
   "description": "auth0 ip address to connections lookup webtask",
   "main": "build/main/ipconn.js",
@@ -9,15 +9,31 @@
   "scripts": {
     "clean": "./node_modules/.bin/rimraf build && mkdir build",
     "compile": "babel --presets es2015,stage-0 -d build/ src/",
-    "postcompile": "cp src/tools/sample.csv build/tools && cp src/tools/deploy.sh build/tools",
+    "postcompile": "rm -f build/tools/*.csv && cp src/tools/sample.csv build/tools",
     "watch:compile": "npm run compile -- --watch",
-    "build": "npm run clean && npm run compile",
+    "build": "npm run clean && npm run lint && npm run compile && npm run cov:test",
     "test": "./node_modules/.bin/mocha build/test/main --recursive --colors -u bdd -R spec --bail",
     "watch:test": "npm run test -- --watch -R min",
     "cov:test": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- build/test/main/**/*.js -R spec",
     "lint": "./node_modules/.bin/eslint --fix src/**/*.js || true",
-    "watch:lint": "watch 'npm run lint' ."
+    "watch:lint": "watch 'npm run lint' .",
+    "loader": "node ./build/tools/loader.js",
+    "help:loader": "npm run loader -- --help",
+    "ipinjector": "node ./build/test/tools/ipInjector.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:arcseldon/ip-conn-webtask.git"
+  },
+  "keywords": [
+    "auth0",
+    "ip",
+    "lookup",
+    "ip-conn-webtask",
+    "ip",
+    "connection",
+    "webtask"
+  ],
   "eslintConfig": {
     "env": {
       "browser": false,
@@ -29,8 +45,10 @@
   "dependencies": {
     "async": "^1.5.2",
     "commander": "^2.9.0",
+    "dotenv": "^2.0.0",
     "ipaddr.js": "^1.1.0",
-    "ramda": "^0.18.0"
+    "ramda": "^0.18.0",
+    "request": "^2.69.0"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",
